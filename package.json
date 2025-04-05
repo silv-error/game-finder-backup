@@ -1,0 +1,33 @@
+{
+  "name": "game-hunter",
+  "version": "1.0.0",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/silv-error/game-hunter.git"
+  },
+  "keywords": ["game", "chat", "social"],
+  "type":"module",
+  "author": "joefrancis.silv@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/silv-error/game-hunter/issues"
+  },
+  "homepage": "https://github.com/silv-error/game-hunter#readme",
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
