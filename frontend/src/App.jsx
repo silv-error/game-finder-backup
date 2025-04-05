@@ -5,6 +5,7 @@ import SignupPage from './pages/auth/signup/SignupPage.jsx'
 
 import HomePage from './pages/home/HomePage.jsx'
 import ProfilePage from './pages/profile/ProfilePage.jsx'
+import ChatPage from './pages/message/ChatPage.jsx'
 
 function App() {
 
@@ -14,7 +15,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/profile/:id" element={<ProfilePage />} />
+        <Route path="/profile/:username" element={<ProfilePage />} />
+        <Route path="/chat/:username" element={<ChatPage />} />
       </Routes>
     </>
   )
