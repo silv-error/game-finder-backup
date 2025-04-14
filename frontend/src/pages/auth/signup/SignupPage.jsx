@@ -60,7 +60,9 @@ const SignupPage = () => {
                 name='tagName'
                 onChange={handleChange}
                 className="grow" 
-                placeholder="Tag Name" 
+                placeholder="Tag Name"
+                minLength={4} 
+                maxLength={4} 
               />
             </label>
             <label className="input input-bordered flex items-center gap-2">
