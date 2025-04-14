@@ -1,9 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import useStore from '../../zustand/useStore';
+import useGetUser from '../../hooks/useGetUser';
 
 const Posts = ({ post }) => {
   
+  const {authUser} = useGetUser();
+
+  const myPost = authUser._id === post.user._id
+
   let bgColor = "bg-blue-600";
   if(post.type === "Tournament") bgColor = "bg-rose-600";
   if(post.type === "Casual") bgColor = "bg-green-600";
@@ -21,13 +26,13 @@ const Posts = ({ post }) => {
           > 
             View Details
           </button>
-          <Link 
+          {!myPost && <Link 
             to={`/chat/${post.user._id}`} 
             onClick={() => setSelectedConversation(post.user)}
             className='btn btn-xs btn-primary ml-2 text-slate-100'
           >
             Connect
-          </Link>
+          </Link>}
         </div>
         <Link to={`/profile/${post.user._id}`} className='flex gap-2 items-center w-full'>
           <img src={post.user.profileImg || '/avatar.jpeg'} className='w-10 h-10 rounded-full' />

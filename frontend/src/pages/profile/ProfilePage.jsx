@@ -267,7 +267,7 @@ const ProfilePage = () => {
                 />
               </div>
               <div className='col-span-1 flex items-center justify-center'>
-                <button onClick={(e) => e.preventDefault()} className='btn btn-sm md:btn-md btn-primary float-right text-slate-100 uppercase'>
+                <button className='btn btn-sm md:btn-md btn-primary float-right text-slate-100 uppercase'>
                   {isPending? <LoadingState size={'sm'} /> : 'Save'}
                 </button>
               </div>

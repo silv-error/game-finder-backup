@@ -1,8 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import useStore from '../../zustand/useStore.js'
+import useGetUser from '../../hooks/useGetUser.js';
 
 const LatestPost = ({ post }) => {
+
+  const {authUser} = useGetUser();
+
+  const myPost = authUser._id === post.user._id
 
   const {setSelectedConversation} = useStore();
   const MAX_LENGTH = 50
@@ -30,14 +35,14 @@ const LatestPost = ({ post }) => {
             >
               View Details
             </button>
-            <Link 
+            {!myPost && <Link 
               to={`/chat/${post.user._id}`}
               onClick={()=>setSelectedConversation(post.user)}
             >
               <button onClick={()=>setSelectedConversation(post.user)} className='btn btn-xs sm:btn-sm md:btn-md btn-primary text-slate-100 rounded-md'>
                 Connect
               </button>
-            </Link>
+            </Link>}
           </div>
         </div>
 

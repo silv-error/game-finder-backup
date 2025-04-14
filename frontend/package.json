@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.72.2",
     "daisyui": "^4.12.24",
+    "game-hunter": "file:..",
     "lucide-react": "^0.487.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

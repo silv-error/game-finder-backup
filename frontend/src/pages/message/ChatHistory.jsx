@@ -20,7 +20,7 @@ const ChatHistory = ({ chat }) => {
       >
         <div className={`flex h-20 ${selectedUser ? "bg-gray-400 bg-opacity-15" : ""} hover:bg-gray-400 hover:bg-opacity-15 items-center rounded-lg gap-2 lg:py-0 py-2 px-4 w-full`}>
           <div className={`avatar ${isOnline ? 'online' : ''}`}>
-            <div className="w-16 lg:w-10 rounded-full">
+            <div className="max-w-16 lg:w-10 rounded-full">
               <img src={chat.profileImg || '/avatar.jpeg'} />
             </div>
           </div>
