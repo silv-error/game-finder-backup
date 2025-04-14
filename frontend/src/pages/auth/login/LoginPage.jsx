@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import useLogin from '../../../hooks/useLogin';
+import LoadingState from '../../../components/common/LoadingState';
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const {login, loading} = useLogin();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    login(formData);
   }
 
   const handleChange = (e) => {
@@ -32,10 +38,10 @@ const LoginPage = () => {
             </svg>
             <input 
               type="text"
-              name="username"
+              name="email"
               onChange={handleChange}
               className="w-96 grow"
-              placeholder="Username"
+              placeholder="Email"
             />
           </label>
           <label className="input input-bordered flex items-center gap-2">
@@ -57,7 +63,9 @@ const LoginPage = () => {
               placeholder='Password'
             />
           </label>
-          <button className="btn btn-primary mt-10 w-3/5 mx-auto text-gray-100 uppercase font-medium rounded-sm">Login</button>
+          <button className="btn btn-primary mt-10 w-3/5 mx-auto text-gray-100 uppercase font-medium rounded-sm">
+            {loading ? <LoadingState size={"md"} /> : 'Login'}
+          </button>
           <div className='flex items-center gap-4 mt-10'>
             <div className='bg-slate-400 w-full h-[0.5px]' />
             <p className='w-full text-slate-400 text-center whitespace-nowrap'>Don't have an account?</p>

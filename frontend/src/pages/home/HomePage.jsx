@@ -1,13 +1,31 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import USERS from "../../utils/db/users";
-import POSTS from "../../utils/db/posts";
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
+
 import Posts from './Posts';
 import Header from '../../components/Header';
 import ActivePlayers from './ActivePlayers';
+import useGetLatestPost from '../../hooks/useGetLatestPost.js';
+import LatestPost from './LatestPost';
+import useGetPosts from '../../hooks/useGetPosts.js';
+import useGetActivePlayers from '../../hooks/useGetActivePlayers.js';
+import useListenMessage from '../../hooks/useListenMessage.js';
+import { SocketContextProvider } from '../../context/SocketContext.jsx';
 
 const HomePage = () => {
+
+  const {latestPost, isLoading: latestPostLoading} = useGetLatestPost();
+  const {getPosts, isLoading} = useGetPosts();
+  const {getActivePlayers, isLoading: activePlayersLoading} = useGetActivePlayers();
+
+
   return (
     <div className='py-4 px-8 md:px-14 h-screen '>
 
@@ -16,66 +34,20 @@ const HomePage = () => {
       {/* MAIN CONTENT */}
       <div className='flex flex-col-reverse lg:grid lg:grid-cols-12 mt-8 gap-14'>
         {/* HIGHLIGHTED POST */}
-        <div className='bg-gray-800 backdrop-blur-sm rounded-lg col-span-8 px-4 md:px-8 lg:px-12 py-4 flex flex-col justify-around'>
-          <div className='flex justify-between w-full'>
-            <div className='badge badge-lg'>Tournament</div>
-            <div className='badge badge-xs sm:badge-sm md:badge-md badge-primary text-slate-100 p-4'>Valorant</div>
-          </div>
-          <div className='flex justify-center w-full max-h-[480px] mt-2 md:mt-4'>
-            <img src='/valorant.png' className='rounded-xl object-cover' />
-          </div>
-          <div className='flex justify-between md:mt-4'>
-            <div className='flex items-center gap-2'>
-              <img src='/avatar.jpeg' className='w-8 sm:w-12 rounded-full' />
-              <div>
-                <h2 className='font-medium text-sm md:text-lg'>Looking for Duo</h2>
-                <p className='text-slate-400'>@johndoe</p>
-              </div>
-            </div>
-            <div className='flex flex-col sm:flex-row items-center gap-2 mt-2 md:gap-4 md:mt-2'>
-              <button 
-                className='btn btn-xs sm:btn-sm md:btn-md btn-secondary text-slate-100 rounded-md'
-                onClick={()=>document.getElementById("highlighted-post").showModal()}
-              >
-                View Details
-              </button>
-              <Link to={'/chat/2'}>
-                <button className='btn btn-xs sm:btn-sm md:btn-md btn-primary text-slate-100 rounded-md'>
-                  Connect
-                </button>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* HIGHLIGHTED POST DETAILS MODAL */}
-        <dialog id={"highlighted-post"} className="modal">
-          <div className="modal-box">
-            <form method="dialog">
-              {/* if there is a button in form, it will close the modal */}
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-            </form>
-            <h3 className="font-bold text-lg">
-              Invite Details
-            </h3>
-            
-            <div className='grid grid-cols-3'>
-              <div className='col-span-2'>
-                <h2 className='py-2 text-slate-100 font-medium'>Game</h2>
-                <p className='text-lg'>Valorant</p>
-                
-                <h2 className='py-2 text-slate-100 font-medium'>Rank</h2>
-                <p className='text-lg'>Platinum</p>
-                
-                <h2 className='py-2 text-slate-100 font-medium'>Game Type</h2>
-                <p className='text-lg'>Tournament</p>
-                
-                <h2 className='py-2 text-slate-100 font-medium'>Description</h2>
-                <p className='text-lg'>Looking for Duo</p>
-              </div>
-            </div>
-          </div>
-        </dialog>
+        <Swiper
+          modules={[Navigation, Pagination, Scrollbar, A11y]}
+          spaceBetween={50}
+          slidesPerView={1}
+          navigation
+          pagination={{ clickable: true }}
+          className='bg-gray-800 backdrop-blur-sm rounded-lg col-span-8 md:px-8 lg:px-12 flex flex-col justify-around w-full'         
+        >
+          {latestPost?.map((post) => (
+            <SwiperSlide className='p-4 md:px-8 lg:px-12'>
+              <LatestPost key={post.id} post={post} SwiperSlide={SwiperSlide}  />
+            </SwiperSlide>
+          ))}
+        </Swiper>
         
 
         {/* ACTIVE PLAYERS LIST */}
@@ -85,8 +57,8 @@ const HomePage = () => {
           </div>
           <div className='flex lg:flex-col'>
             {/* Sidebar content here */}
-            {USERS.map((user) => (
-              <ActivePlayers key={user.id} user={user} />
+            {getActivePlayers?.map((activePlayer) => (
+              <ActivePlayers key={activePlayer._id} user={activePlayer} />
             ))}
           </div>
         </div>
@@ -98,9 +70,9 @@ const HomePage = () => {
       </div>
 
       <div className='grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4 gap-8'>
-        {POSTS.map((post) => (
+        {getPosts?.map(post => (
           <>
-            <Posts key={post.id} post={post} />
+            <Posts key={post._id} post={post} />
           </>
         ))}
       </div>

@@ -2,11 +2,18 @@ import Post from "../models/post.model.js";
 
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find()
+    const excludePost = await Post.find()
     .sort({ createdAt: -1 })
-    .populate("user");
+    .limit(3);
+
+    const posts = await Post.find({
+      _id: { $nin: excludePost.map(post => post._id) }
+    })
+    .sort({ createdAt: -1 })
+    .populate({ path: "user", select: "-password" });
+
     if (!posts) return res.status(404).json({ error: "Posts not found" });
-    res.status(200).json({ posts });
+    res.status(200).json(posts);
   } catch (error) {
     console.error(`Error in getAllPosts controller: ${error.message}`);
     res.status(500).json({ error: "Internal server error" });
@@ -15,9 +22,10 @@ export const getAllPosts = async (req, res) => {
 
 export const getLatestPost = async (req, res) => {
   try {
-    const post = await Post.findOne()
+    const post = await Post.find({})
     .sort({ createdAt: -1 })
-    .populate({ path: "user", select: "-password" });
+    .populate({ path: "user", select: "-password" })
+    .limit(3);
     if (!post) return res.status(404).json({ error: "Post not found" });
     res.status(200).json(post);
   } catch (error) {
@@ -48,6 +56,22 @@ export const createPost = async (req, res) => {
     res.status(201).json({ message: "Post created successfully" });
   } catch (error) {
     console.error(`Error in createPost controller: ${error.message}`);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export const getInvites = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const invites = await Post.find({ user: userId }).populate({
+      path: "user",
+      select: "-password"
+    });
+    if(!invites) return res.status(404).json({ error: "No invites found" });
+
+    res.status(200).json(invites);
+  } catch (error) {
+    console.error(`Error in getting invites: ${error.message}`);
     res.status(500).json({ error: "Internal server error" });
   }
 }

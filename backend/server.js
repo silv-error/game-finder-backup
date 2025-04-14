@@ -8,10 +8,10 @@ import postRoutes from "./routes/post.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 
 import connectDB from "./config/db.js";
+import { app, server } from "./socket/socketio.js";
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json({ limit: "10mb" }));
@@ -23,7 +23,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/messages", messageRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
   connectDB();
 });

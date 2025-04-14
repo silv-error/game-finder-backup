@@ -22,6 +22,11 @@ export const updateUserProfile = async (req, res) => {
     const userId = req.user._id;
     let user = await User.findById({ _id: userId });
 
+    const existingUser  = await User.findOne({ _id: { $ne: userId }, username: username || user.username, tagName: tagName || user.tagName });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+
     if(profileImg) {
       if(user.profileImg) await cloudinary.uploader.destroy(user.profileImg.split("/").pop().split(".")[0]);
       
@@ -36,14 +41,16 @@ export const updateUserProfile = async (req, res) => {
       coverImg = result.secure_url;
     }
 
-    const gameExist = user.games.find(game => game === games);
-    if(gameExist) return res.status(400).json({ error: "Game already exists" });
+    if (games) {
+      const gameExist = user.games.find(game => game === games);
+      if(gameExist) return res.status(400).json({ error: "Game already exists" });
 
-    await User.findByIdAndUpdate({ _id: userId }, { 
-      $push: {
-        games
-      }
-    });
+      user = await User.findByIdAndUpdate({ _id: userId }, { 
+        $push: {
+          games
+        }
+      }, { new: true });
+    }
 
     user.username = username || user.username ;
     user.tagName = tagName || user.tagName;
@@ -62,11 +69,63 @@ export const updateUserProfile = async (req, res) => {
 
 export const getActivePlayers = async (req, res) => {
   try {
-    const users = await User.find();
+    const userId = req.user._id;
+    const users = await User.find({ _id: { $ne: userId }});
     if(!users) return res.status(404).json({ error: "Users not found" });
-    res.status(200).json({ users });
+    res.status(200).json(users);
   } catch (error) {
     console.error(`Error in getActivePlayers controller: ${error.message}`);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export const getGameList = async (req, res) => {
+  try {
+
+    const user = req.user;
+    const games = [
+      "Valorant",
+      "Minecraft",
+      "League of Legends",
+      "CS2",
+      "Dota 2",
+      "Apex Legends",
+      "Fortnite",
+      "Call of Duty: Warzone",
+      "Among Us",
+      "Genshin Impact",
+      "Rainbow Six Siege",
+      "Overwatch",
+      "Destiny 2",
+      "Sea of Thieves",
+      "Rust",
+      "World of Warcraft",
+      "Final Fantasy XIV",
+      "Monster Hunter: World",
+      "Phasmophobia",
+      "ARK: Survival Evolved"
+    ];
+
+    const gameList = games.filter(game => !user.games.includes(game));
+
+    res.status(200).json(gameList);
+  } catch (error) {
+    console.error(`Error in getGameList controller: ${error.message}`);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export const deleteGames = async (req, res) => {
+  try {
+    const gameName = req.params.name;
+    const userId = req.user._id;
+
+    await User.findByIdAndUpdate({ _id: userId }, { $pull: { games: gameName } });
+
+    res.status(200).json({ message: "Game deleted successfully" });
+
+  } catch (error) { 
+    console.error(`Error in deleteGames controller: ${error.message}`);
     res.status(500).json({ error: "Internal server error" });
   }
 }

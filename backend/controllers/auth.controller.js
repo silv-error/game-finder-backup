@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
-import { generateAccessToken, generateRefreshToken } from "../libs/utils/generateTokenAndSetCookie.js";
+import { generateAccessToken } from "../libs/utils/generateTokenAndSetCookie.js";
 
 export const signup = async (req, res) => {
   try {
@@ -39,10 +39,7 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
 
-    Promise.all([
-      generateAccessToken(user._id, res),
-      generateRefreshToken(user._id, res),
-    ]);
+    generateAccessToken(user._id, res);
 
     await user.save();
     res.status(201).json({ ...user._doc, password: undefined });
@@ -54,9 +51,9 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if(!user) {
       return res.status(404).json({ error: "Invalid credentials" });
     }
@@ -66,10 +63,7 @@ export const login = async (req, res) => {
       return res.status(404).json({ error: "Invalid credentials" });
     }
 
-    Promise.all([
-      generateAccessToken(user._id, res),
-      generateRefreshToken(user._id, res),
-    ]);
+    generateAccessToken(user._id, res);
 
     res.status(200).json({ ...user._doc, password: undefined });
   } catch (error) {

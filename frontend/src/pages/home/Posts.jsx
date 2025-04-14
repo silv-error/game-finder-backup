@@ -1,41 +1,54 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
+import useStore from '../../zustand/useStore';
 
 const Posts = ({ post }) => {
   
   let bgColor = "bg-blue-600";
   if(post.type === "Tournament") bgColor = "bg-rose-600";
   if(post.type === "Casual") bgColor = "bg-green-600";
+
+  const {setSelectedConversation} = useStore();
+
   return (
     <>
-      <div key={post.username} className='flex flex-col justify-around h-48 bg-gray-800 rounded-lg p-4 cursor-default' >
+      <div key={post.user.username} className='flex flex-col justify-around h-48 bg-gray-800 rounded-lg p-4 cursor-default' >
         <div className='flex'>
           <div className={`badge ${bgColor} p-2`}>{post.type}</div>
           <button 
             className='btn btn-xs btn-secondary ml-auto text-slate-100'
-            onClick={()=>document.getElementById(post.id).showModal()}
+            onClick={()=>document.getElementById(post._id).showModal()}
           > 
             View Details
           </button>
-          <button className='btn btn-xs btn-primary ml-2 text-slate-100'>Connect</button>
+          <Link 
+            to={`/chat/${post.user._id}`} 
+            onClick={() => setSelectedConversation(post.user)}
+            className='btn btn-xs btn-primary ml-2 text-slate-100'
+          >
+            Connect
+          </Link>
         </div>
-        <div className='flex gap-2 items-center'>
-          <img src='/avatar.jpeg' className='w-10 h-10 rounded-full' />
-          <div>
-            <p className='font-medium'>{post.desctipion}</p>
-            <p className='text-sm text-slate-400'>@{post.username}</p>
+        <Link to={`/profile/${post.user._id}`} className='flex gap-2 items-center w-full'>
+          <img src={post.user.profileImg || '/avatar.jpeg'} className='w-10 h-10 rounded-full' />
+          <div className='w-full flex flex-wrap flex-col'>
+            <p className='font-medium'>{post.description.length > 120 
+        ? `${post.description.substring(0, 120)}...` 
+        : post.description}</p>
+            <p className='text-sm text-slate-400'>@{post.user.username}</p>
           </div>
-        </div>
+        </Link>
         <div className='flex justify-between'>
           <h2 className='font-medium'>Rank Required</h2>
           <p className='badge badge-outline'>{post.rank}</p>
         </div>
         <div className='flex justify-between'>
           <h2 className='font-medium'>Game</h2>
-          <p className='badge badge-ghost'>{post.game}</p>
+          <p className='badge badge-ghost'>{post.name}</p>
         </div>
       </div>
 
-      <dialog id={post.id} className="modal">
+      <dialog id={post._id} className="modal">
         <div className="modal-box">
           <form method="dialog">
             {/* if there is a button in form, it will close the modal */}
@@ -48,7 +61,7 @@ const Posts = ({ post }) => {
           <div className='grid grid-cols-3'>
             <div className='col-span-2'>
               <h2 className='py-2 text-slate-100 font-medium'>Game</h2>
-              <p className='text-lg'>{post.game}</p>
+              <p className='text-lg'>{post.name}</p>
               
               <h2 className='py-2 text-slate-100 font-medium'>Rank</h2>
               <p className='text-lg'>{post.rank}</p>
@@ -57,7 +70,7 @@ const Posts = ({ post }) => {
               <p className='text-lg'>{post.type}</p>
               
               <h2 className='py-2 text-slate-100 font-medium'>Description</h2>
-              <p className='text-lg'>{post.desctipion}</p>
+              <p className='text-lg'>{post.description}</p>
             </div>
           </div>
         </div>

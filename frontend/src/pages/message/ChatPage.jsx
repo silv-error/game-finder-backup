@@ -1,25 +1,58 @@
 import Message from './Message.jsx';
 import React, { useEffect, useRef, useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import CHAT_HISTORY from '../../utils/db/users.js';
+import { ChevronLeft, Send } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
 import ChatHistory from './ChatHistory.jsx';
+import useGetMessages from '../../hooks/useGetMessages.js';
+import useGetChatHistory from '../../hooks/useGetChatHistory.js';
+import useSendMessage from '../../hooks/useSendMessage.js';
+import useListenMessage from '../../hooks/useListenMessage.js';
+import useStore from '../../zustand/useStore.js';
+import { useSocketContext } from '../../context/SocketContext.jsx';
 
 const ChatPage = () => {
-    const [value, setValue] = useState('');
+    const { id } = useParams();
+
+    const [message, setMessage] = useState("");
+    const { messages } = useGetMessages({ id });
+    const {chatHistory} = useGetChatHistory();
+    const {selectedConversation} = useStore();
+    
     const textareaRef = useRef(null);
     const lineHeight = 24; // Adjust this value based on your font size and line height
-
+    const lastMessageRef= useRef();
+    
+    useEffect(() => {
+        if (lastMessageRef.current) {
+            lastMessageRef.current.scrollIntoView({ block: 'end' });
+        }
+    }, [messages]);
+    
     useEffect(() => {
         // Reset the height to auto to calculate the new height
         textareaRef.current.style.height = 'auto';
         // Set the height to the scroll height to fit the content
         textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, lineHeight * 3)}px`;
-    }, [value]); // Run this effect whenever the value changes
+    }, [message]); // Run this effect whenever the value changes
 
-    const handleChange = (event) => {
-        setValue(event.target.value);
-    };
+    const { sendMessage } = useSendMessage({ id });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        sendMessage({message});
+        setMessage("")
+    }
+
+    const handleOnChange = (e) => {
+        setMessage(e.target.value);
+    }
+
+    const badgeList = [
+        "badge-info",
+        "badge-success",
+        "badge-warning",
+        "badge-error",
+    ];
 
     return (
         <div className='h-screen grid grid-cols-12 bg-figma_primary'>
@@ -30,65 +63,98 @@ const ChatPage = () => {
                         <h2 className='text-md md:text-2xl font-bold'>Chat History</h2>
                     </div>
                     <div className='flex-10 overflow-y-auto'>
-                        {CHAT_HISTORY.map((chat) => (
-                            <ChatHistory chat={chat} key={chat.id} />
+                        {chatHistory?.map((chat) => (
+                            <ChatHistory chat={chat} key={chat._id} senderId={id} />
                         ))}
                     </div>
                 </div>
             </div>
 
             {/* MESSAGE CONTAINER */}
-            <div className='col-span-10 lg:col-span-7 flex flex-col h-screen'>
+            {!selectedConversation ? (
+                <>
+                    <div className='col-span-10 lg:col-span-7 flex flex-col justify-between h-screen border-r-[1px] border-opacity-25 border-white'>
+                        <div className='flex items-center gap-4 p-8 bg-figma_bg'>
+                            <Link to={'/'} className='btn btn-secondary bg-opacity-15 hover:bg-opacity-15 text-slate-100 border-0'>
+                                <ChevronLeft />
+                            </Link>
+                            <img src={selectedConversation?.profileImg} className='w-10 lg:w-14 rounded-full' />
+                            <h1 className='text-xl lg:text-4xl font-bold'>{selectedConversation?.username} </h1>
+                        </div>
+                        <h2 className='flex justify-center'>No chat selected</h2>
+                        <div className='flex gap-4 items-end justify-end bg-figma_bg px-8 py-2'>
+                            <textarea
+                                ref={textareaRef}
+                                value={message}
+                                onChange={handleOnChange}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-2xl resize-none border-opacity-20 overflow-hidden outline-none"
+                                placeholder="Aa"
+                                rows={1} // Start with one row
+                            />
+                            <div>
+                                <button className='cursor-not-allowed'>
+                                    <Send />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <>
+                <div className='col-span-10 lg:col-span-7 flex flex-col h-screen'>
                 <div className='flex items-center gap-4 p-8 bg-figma_bg'>
                     <Link to={'/'} className='btn btn-secondary bg-opacity-15 hover:bg-opacity-15 text-slate-100 border-0'>
                         <ChevronLeft />
                     </Link>
-                    <img src='/avatar.jpeg' className='w-10 lg:w-14 rounded-full' />
-                    <h1 className='text-xl lg:text-4xl font-bold'>John Doe</h1>
+                    <img src={selectedConversation?.profileImg || '/avatar.jpeg'} className='w-10 lg:w-14 rounded-full' />
+                    <h1 className='text-xl lg:text-4xl font-bold'>{selectedConversation?.username} </h1>
                 </div>
                 <div className='flex-1 bg-figma_primary px-4 overflow-auto'>
                     {/* MESSAGES */}
-                    <Message />
-                    <Message />
-                    <Message />
-                    <Message />
-                    <Message />
-                    <Message />
-                    <Message />
-                    <Message />
-                    <Message />
+                    {messages?.map((message) => (
+                        <div key={message._id}  ref={lastMessageRef}>
+                            <Message message={message} />
+                        </div>
+                    ))}
                 </div>
-                <div className='flex gap-4 items-center bg-figma_bg px-8 py-2'>
-                    <textarea
-                        ref={textareaRef}
-                        value={value}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-2xl resize-none border-opacity-20 overflow-hidden outline-none"
-                        placeholder="Aa"
-                        rows={1} // Start with one row
-                    />
-                    <div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-send-icon lucide-send hover:text-primary">
-                            <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
-                            <path d="m21.854 2.147-10.94 10.939" />
-                        </svg>
+                <form onSubmit={handleSubmit}>
+                    <div className='flex gap-4 items-center bg-figma_bg px-8 py-2'>
+                        <textarea
+                            ref={textareaRef}
+                            value={message}
+                            onChange={handleOnChange}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-2xl resize-none border-opacity-20 overflow-hidden outline-none"
+                            placeholder="Aa"
+                            rows={1} // Start with one row
+                        />
+                        <div>
+                            <button>
+                                <Send className='hover:text-red-500' />
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
+                </>
+            )}
 
             {/* USER INFO */}
-            <div className='col-span-3 hidden lg:flex flex-col px-4 items-center border-l border-white border-opacity-20'>
+            {selectedConversation && <div className='col-span-3 hidden lg:flex flex-col px-4 items-center border-l border-white border-opacity-20 mt-40'>
                 <img src='/avatar.jpeg' className='w-24 rounded-full hidden lg:block' />
-                <h2 className='hidden lg:block text-2xl font-bold'>@johndoe <span className='opacity-55 hidden sm:block'>#0000</span></h2>
+                <Link to={`/profile/${selectedConversation?._id}`}>
+                    <h2 className='hidden lg:flex lg:gap-2 text-2xl font-bold'>
+                        @{selectedConversation?.username}
+                        <span className='opacity-55 hidden sm:block'>#{selectedConversation?.tagName} </span>
+                    </h2>
+                </Link>
                 <div className='hidden lg:flex justify-center max-w-50 flex-wrap'>
                     <div className='flex gap-1 flex-wrap mt-4'>
-                        <div className="badge badge-neutral">Valorant</div>
-                        <div className="badge badge-primary">Minecraft</div>
-                        <div className="badge badge-secondary">League of Legends</div>
-                        <div className="badge badge-accent">Dota 2</div>
+                        {selectedConversation?.games?.map((game, index) => (
+                            <div key={index} className={`badge ${badgeList[index]} `}>{game}</div>
+                        ))}
                     </div>
                 </div>
-            </div>
+            </div> }
         </div>
     );
 };
