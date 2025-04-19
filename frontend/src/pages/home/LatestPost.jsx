@@ -7,7 +7,7 @@ const LatestPost = ({ post }) => {
 
   const {authUser} = useGetUser();
 
-  const myPost = authUser?._id === post.user._id
+  const myPost = authUser?._id === post.user?._id
 
   const {setSelectedConversation} = useStore();
   const MAX_LENGTH = 50
@@ -21,7 +21,7 @@ const LatestPost = ({ post }) => {
           <img src={post.user.coverImg || '/valorant.png'} className='rounded-xl object-cover' />
         </div>
         <div className='flex justify-between md:mt-4'>
-          <Link to={`/profile/${post.user._id}`} className='flex items-center gap-2 text-start'>
+          <Link to={`/profile/${post.user?._id}`} className='flex items-center gap-2 text-start'>
             <img src={post.user.profileImg || '/avatar.jpeg'} className='w-8 h-8 sm:w-12 sm:h-12 rounded-full' />
             <div>
               <h2 className='font-medium text-sm md:text-lg'>{post.description.length > MAX_LENGTH ? `${post.description.substring(0, MAX_LENGTH)}...` : post.description} </h2>
@@ -36,7 +36,7 @@ const LatestPost = ({ post }) => {
               View Details
             </button>
             {!myPost && <Link 
-              to={`/chat/${post.user._id}`}
+              to={`/chat/${post.user?._id}`}
               onClick={()=>setSelectedConversation(post.user)}
             >
               <button onClick={()=>setSelectedConversation(post.user)} className='btn btn-xs sm:btn-sm md:btn-md btn-primary text-slate-100 rounded-md'>

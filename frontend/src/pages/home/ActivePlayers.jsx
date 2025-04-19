@@ -7,13 +7,13 @@ const ActivePlayers = ({user}) => {
   const {onlineUsers} = useSocketContext();
   const {setSelectedConversation} = useStore()
 
-  const onlineUser = onlineUsers.includes(user._id)
+  const onlineUser = onlineUsers.includes(user?._id)
 
   return (
     <>
       <> 
         <Link 
-          to={`/chat/${user._id}`}
+          to={`/chat/${user?._id}`}
           onClick={() => setSelectedConversation(user)}
         >
           <div className='flex flex-row cursor-pointer'>

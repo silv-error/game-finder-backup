@@ -19,6 +19,8 @@ const useLogout = () => {
           throw new Error("Something went wrong");
         }
 
+        localStorage.removeItem("game-hunter-user");
+        setAuthUser(null);
         return data;
       } catch (error) {
         throw new Error(error);

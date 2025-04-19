@@ -1,8 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import io from "socket.io-client";
-import { useQuery } from "@tanstack/react-query";
-import { useAuthContext } from "./useAuthContext";
 import useGetUser from "../hooks/useGetUser";
+import { useAuthContext } from "./useAuthContext";
 
 const SocketContext = createContext();
 
@@ -13,13 +12,14 @@ export const useSocketContext = () => {
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const {authUser} = useGetUser();
+  // const {authUser} = useGetUser();
+  const {authUser} = useAuthContext();
 
   useEffect(() => {
     if (authUser) {
       const socket = io("https://game-hunter.onrender.com/", {
         query: {
-          userId: authUser._id,
+          userId: authUser?._id,
         },
       });
 

@@ -30,6 +30,8 @@ const useLogin = () => {
       }
       
       queryClient.invalidateQueries({ queryKey:["authUser"] });
+      localStorage.setItem("game-hunter-user", JSON.stringify(data));
+      setAuthUser(data);
     } catch (error) {
       throw new Error(error);
     } finally {

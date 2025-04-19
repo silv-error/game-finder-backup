@@ -7,7 +7,7 @@ const Posts = ({ post }) => {
   
   const {authUser} = useGetUser();
 
-  const myPost = authUser?._id === post.user._id
+  const myPost = authUser?._id === post.user?._id
 
   let bgColor = "bg-blue-600";
   if(post.type === "Tournament") bgColor = "bg-rose-600";
@@ -27,14 +27,14 @@ const Posts = ({ post }) => {
             View Details
           </button>
           {!myPost && <Link 
-            to={`/chat/${post.user._id}`} 
+            to={`/chat/${post.user?._id}`} 
             onClick={() => setSelectedConversation(post.user)}
             className='btn btn-xs btn-primary ml-2 text-slate-100'
           >
             Connect
           </Link>}
         </div>
-        <Link to={`/profile/${post.user._id}`} className='flex gap-2 items-center w-full'>
+        <Link to={`/profile/${post.user?._id}`} className='flex gap-2 items-center w-full'>
           <img src={post.user.profileImg || '/avatar.jpeg'} className='w-10 h-10 rounded-full' />
           <div className='w-full flex flex-wrap flex-col'>
             <p className='font-medium'>{post.description.length > 120 

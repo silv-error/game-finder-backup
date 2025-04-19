@@ -29,6 +29,8 @@ const useSignup = () => {
         throw new Error("Something went wrong");
       }
       queryClient.invalidateQueries(["authUser"]);
+      localStorage.setItem("game-hunter-user", JSON.stringify(data));
+      setAuthUser(data);
       return data;
     } catch (error) {
       throw new Error(error);
