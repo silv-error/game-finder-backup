@@ -7,7 +7,7 @@ const Posts = ({ post }) => {
   
   const {authUser} = useGetUser();
 
-  const myPost = authUser._id === post.user._id
+  const myPost = authUser?._id === post.user._id
 
   let bgColor = "bg-blue-600";
   if(post.type === "Tournament") bgColor = "bg-rose-600";
