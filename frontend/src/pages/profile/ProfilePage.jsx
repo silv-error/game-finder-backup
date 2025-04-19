@@ -177,7 +177,7 @@ const ProfilePage = () => {
           <div className={`${!myProfile ? "mt-2" : ""}`}>
             {getUserProfile?.games?.map((game, index) => (
               <>
-                <div key={game} className={`badge ${badgeList[index]} gap-2 mx-1`}>
+                <div key={index} className={`badge ${badgeList[index]} gap-2 mx-1`}>
                   <button onClick={() => deleteGame(game)}>
                     {(myProfile && !isPendingDelete) && (
                       <svg

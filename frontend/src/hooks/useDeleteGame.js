@@ -8,7 +8,7 @@ const useDeleteGame = () => {
   const {mutate:deleteGame, isPending} = useMutation({
     mutationFn: async(name) => {
       try {
-        const res = await fetch(`/api/users/delete/game/${name}`, {
+        const res = await fetch(`/api/users/delete/${name}`, {
           method: 'DELETE'
         });
         const data = await res.json();
