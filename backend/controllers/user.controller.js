@@ -22,8 +22,6 @@ export const updateUserProfile = async (req, res) => {
     const userId = req.user._id;
     let user = await User.findById({ _id: userId });
 
-    if(!username && !tagName && !bio) return res.status(400).json({ error: "You must input something" });
-
     const existingUser  = await User.findOne({ _id: { $ne: userId }, username: username || user.username, tagName: tagName || user.tagName });
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
