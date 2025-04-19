@@ -7,7 +7,7 @@ const LatestPost = ({ post }) => {
 
   const {authUser} = useGetUser();
 
-  const myPost = authUser._id === post.user._id
+  const myPost = authUser?._id === post.user._id
 
   const {setSelectedConversation} = useStore();
   const MAX_LENGTH = 50

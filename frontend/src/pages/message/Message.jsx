@@ -8,7 +8,7 @@ const Message = ({ message }) => {
   const {authUser} = useGetUser();
   const {selectedConversation} = useStore();
   const sender = message?.senderId === authUser?._id;
-  const profileImg = sender ? authUser.profileImg : selectedConversation.profileImg
+  const profileImg = sender ? authUser?.profileImg : selectedConversation?.profileImg
   const messageDate = formatMessageDate(message.createdAt)
   const bubbleBg = sender ? "bg-primary" : "";
   
