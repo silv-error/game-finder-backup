@@ -18,14 +18,14 @@ const LatestPost = ({ post }) => {
           <div className='badge badge-xs sm:badge-sm md:badge-md badge-primary text-slate-100 p-4'>{post.name} </div>
         </div>
         <div className='flex justify-center w-full max-h-[480px] mt-2 md:mt-4'>
-          <img src={post.user.coverImg || '/valorant.png'} className='rounded-xl object-cover' />
+          <img src={post.user?.coverImg || '/valorant.png'} className='rounded-xl object-cover' />
         </div>
         <div className='flex justify-between md:mt-4'>
           <Link to={`/profile/${post.user?._id}`} className='flex items-center gap-2 text-start'>
-            <img src={post.user.profileImg || '/avatar.jpeg'} className='w-8 h-8 sm:w-12 sm:h-12 rounded-full' />
+            <img src={post.user?.profileImg || '/avatar.jpeg'} className='w-8 h-8 sm:w-12 sm:h-12 rounded-full' />
             <div>
-              <h2 className='font-medium text-sm md:text-lg'>{post.description.length > MAX_LENGTH ? `${post.description.substring(0, MAX_LENGTH)}...` : post.description} </h2>
-              <p className='text-slate-400'>@{post.user.username}</p>
+              <h2 className='font-medium text-sm md:text-lg'>{post.description.length > MAX_LENGTH ? `${post.description?.substring(0, MAX_LENGTH)}...` : post.description} </h2>
+              <p className='text-slate-400'>@{post.user?.username}</p>
             </div>
           </Link>
           <div className='flex flex-col sm:flex-row items-center gap-2 mt-2 md:gap-4 md:mt-2'>
