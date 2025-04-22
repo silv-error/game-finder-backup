@@ -1,18 +1,14 @@
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-const useUpdateProfile = () => {
+const useUpdateGameList = () => {
   
   const queryClient = useQueryClient();
 
-  const {mutateAsync:updateProfile, isPending} = useMutation({
-    mutationKey: ['updateProfile'],
+  const {mutateAsync:updateGameList, isPending} = useMutation({
+    mutationKey: ['updateGameList'],
     mutationFn: async(formData) => {
       try {
-        if(!formData.username && !formData.tagName) {
-          const success = handleError(formData);
-          if (!success) return;
-        }
         const res = await fetch('/api/users/update', {
           method: 'PATCH',
           headers: {
@@ -40,23 +36,7 @@ const useUpdateProfile = () => {
     }
   });
 
-  return {updateProfile, isPending};
+  return {updateGameList, isPending};
 }
 
-export default useUpdateProfile;
-
-function handleError(formData) {
-  const usernameRegex = /^(?=.{3,15}$)[a-zA-Z0-9_-]+$/;
-  if(!usernameRegex.test(formData.username)) {
-    toast.error("Invalid username format");
-    return false
-  };
-
-  const tagNameRegex = /^\d{4}$/;
-  if(!tagNameRegex.test(formData.tagName)) {
-    toast.error("Invalid tag name format");
-    return false
-  };
-
-  return true;
-}
+export default useUpdateGameList;

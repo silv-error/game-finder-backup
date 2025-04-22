@@ -9,6 +9,7 @@ import LoadingState from '../../components/common/LoadingState.jsx';
 import useDeleteGame from '../../hooks/useDeleteGame.js';
 import toast from 'react-hot-toast';
 import useGetUser from '../../hooks/useGetUser.js';
+import useUpdateGameList from '../../hooks/useUpdateGameList.js';
 
 const ProfilePage = () => {
 
@@ -19,6 +20,7 @@ const ProfilePage = () => {
   const {getUserProfile, refetch} = useGetUserProfile({id});
   const {gameList} = useGetGameList();
   const {deleteGame, isPending: isPendingDelete} = useDeleteGame();
+  const {updateGameList, isPending:isPendingGameList} = useUpdateGameList();
 
   const myProfile = id === authUser?._id;
 
@@ -63,7 +65,7 @@ const ProfilePage = () => {
       toast.error("Please select a game");
       return;
     };
-    updateProfile({games});
+    updateGameList({games});
   }
 
   const handleGameChange = (e) => {
@@ -243,7 +245,6 @@ const ProfilePage = () => {
                     onChange={handleOnChange} 
                     name='username'
                     value={formData.username}
-                    pattern='[a-Z]'
                   />
                 </label>
                 <label className="input input-bordered flex items-center gap-2 mt-4">
@@ -293,10 +294,10 @@ const ProfilePage = () => {
               <label>
                 <select className='select focus:outline-none input-sm border border-black rounded-md w-full mt-4'
                 name='games' 
-                defaultValue={""}
+                defaultValue={games}
                 onChange={handleGameChange}
                 >
-                  <option value={""} disabled>Pick one</option>
+                  <option value={games} disabled>Pick one</option>
                   {gameList?.map((game, index) => (
                     <option key={index}>{game}</option>
                   ))}
@@ -304,7 +305,9 @@ const ProfilePage = () => {
             </label>
               </div>
               <div className='col-span-1 flex mt-auto justify-center items-center'>
-                <button className='btn btn-md btn-primary float-right text-slate-100 uppercase px-8'>
+                <button 
+                  className='btn btn-md btn-primary float-right text-slate-100 uppercase px-8'
+                >
                   {isPending ? <LoadingState size='md' /> : 'Add'}
                 </button>
               </div>

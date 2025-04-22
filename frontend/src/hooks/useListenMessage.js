@@ -17,7 +17,7 @@ const useListenMessage = () => {
       
       const audio = new Audio(notif);
       audio.play();
-      if (newMessage.senderId === selectedConversation._id) setMessages([...messages, newMessage]);
+      if (newMessage?.senderId === selectedConversation?._id) setMessages([...messages, newMessage]);
 
       location.pathname.split("/")[1] != 'chat' && toast(newMessage.message,
         {
