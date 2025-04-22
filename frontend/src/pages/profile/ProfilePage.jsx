@@ -59,23 +59,23 @@ const ProfilePage = () => {
 
   const [games, setGame] = useState("");
 
-  const handleGameSubmit = (e) => {
+  const handleGameSubmit = async (e) => {
     e.preventDefault();
     if (!games) {
       toast.error("Please select a game");
       return;
     };
-    updateGameList({games});
+    await updateGameList({games});
+    setGame("")
   }
 
   const handleGameChange = (e) => {
     setGame(e.target.value);
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    await updateProfile(formData);
-    setGame("");
+    updateProfile(formData);
   }
 
   const handleOnChange = (e) => {
@@ -293,12 +293,13 @@ const ProfilePage = () => {
             <div className='grid grid-cols-3'>
               <div className='col-span-2'>
               <label>
-                <select className='select focus:outline-none input-sm border border-black rounded-md w-full mt-4'
-                name='games' 
-                defaultValue={games}
-                onChange={handleGameChange}
+                <select 
+                  className='select focus:outline-none input-sm border border-black rounded-md w-full mt-4'
+                  name='games' 
+                  defaultValue={games}
+                  onChange={handleGameChange}
                 >
-                  <option value={games} disabled>Pick one</option>
+                  <option value={games} selected>Pick one</option>
                   {gameList?.map((game, index) => (
                     <option key={index}>{game}</option>
                   ))}
