@@ -27,6 +27,16 @@ export const updateUserProfile = async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
+    const usernameRegex = /^(?=.{3,15}$)[a-zA-Z0-9_-]+$/;
+    if(!usernameRegex.test(formData.username)) {
+      return res.status(400).json({ error: "Invalid username format "});
+    };
+
+    const tagNameRegex = /^\d{4}$/;
+    if(!tagNameRegex.test(formData.tagName)) {
+      return res.status(400).json({ error: "Invalid tagname format "});
+    };
+
     if(profileImg) {
       if(user.profileImg) await cloudinary.uploader.destroy(user.profileImg.split("/").pop().split(".")[0]);
       
