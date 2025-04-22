@@ -243,7 +243,7 @@ const ProfilePage = () => {
                     onChange={handleOnChange} 
                     name='username'
                     value={formData.username}
-                    required
+                    pattern='[a-Z]'
                   />
                 </label>
                 <label className="input input-bordered flex items-center gap-2 mt-4">
@@ -258,7 +258,6 @@ const ProfilePage = () => {
                     onChange={handleOnChange} 
                     value={formData.tagName}  
                     name='tagName'
-                    required
                   />
                 </label>
                 <textarea 

@@ -11,6 +11,8 @@ const useUpdateProfile = () => {
     mutationKey: ['updateProfile'],
     mutationFn: async(formData) => {
       try {
+        const success = handleError(formData);
+        if(!success) return;
         const res = await fetch('/api/users/update', {
           method: 'PATCH',
           headers: {
@@ -31,7 +33,10 @@ const useUpdateProfile = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
+        queryClient.invalidateQueries({ queryKey: ["gameList"] }),
+      ]);
       toast.success("Profile updated successfully");
     },
   });
@@ -40,3 +45,13 @@ const useUpdateProfile = () => {
 }
 
 export default useUpdateProfile;
+
+function handleError(formData) {
+  const usernameRegex = /^(?=.{3,15}$)[a-zA-Z0-9_-]+$/;
+  if(!usernameRegex.test(formData.username)) return false;
+
+  const tagNameRegex = /^\d{4}$/;
+  if(!tagNameRegex.test(formData.tagName)) return false;
+
+  return true;
+}
