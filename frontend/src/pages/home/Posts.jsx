@@ -19,8 +19,6 @@ const Posts = ({ post }) => {
 
   const { mutate: deletePost, post: postId, setPost } = useDeletePost();
 
-  console.log(post);
-
   return (
     <>
       <div
